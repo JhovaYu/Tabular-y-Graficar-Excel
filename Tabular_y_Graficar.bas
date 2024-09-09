@@ -1,5 +1,7 @@
 Attribute VB_Name = "Tabular_y_Graficar"
 Sub TabularFuncion()
+Attribute TabularFuncion.VB_Description = "Tabular y Graficar"
+Attribute TabularFuncion.VB_ProcData.VB_Invoke_Func = "A\n14"
     Dim variable As String
     Dim funcion As String
     Dim rangoInicioStr As String, rangoFinStr As String, intervaloStr As String
@@ -113,13 +115,19 @@ Sub TabularFuncion()
         .Axes(xlValue).HasTitle = True
         .Axes(xlValue).AxisTitle.Text = "F(" & variable & ")"
         
+        With .Axes(xlCategory)
+            .Format.Line.Visible = msoTrue
+            .Format.Line.ForeColor.RGB = RGB(0, 0, 255)
+            .Format.Line.Weight = 1
+        End With
+        
          With .SeriesCollection.NewSeries
             .XValues = Range(Cells(celdaInicial.Row + 1, columnaVariable), Cells(filaActual - 1, columnaVariable)) ' Valores X
             .Values = Range(Cells(celdaInicial.Row + 1, columnaFuncion), Cells(filaActual - 1, columnaFuncion)) ' Valores Y
             .MarkerStyle = xlMarkerStyleCircle
             .MarkerSize = 5
             .Format.Line.Visible = msoTrue
-            .Format.Line.ForeColor.RGB = RGB(0, 0, 0)
+            .Format.Line.ForeColor.RGB = RGB(255, 0, 0)
             .Format.Line.Weight = 1
         End With
     End With
@@ -150,6 +158,8 @@ Function AgregarMultiplicacionImplicita(ByVal funcion As String) As String
     
     AgregarMultiplicacionImplicita = resultado
 End Function
+
+
 
 
 
