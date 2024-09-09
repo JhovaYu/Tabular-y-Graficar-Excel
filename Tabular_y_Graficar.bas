@@ -17,6 +17,7 @@ Sub TabularFuncion()
     Dim graficoRango As Range
     
     
+    
     Set celdaInicial = Selection.Cells(1, 1)
     filaActual = celdaInicial.Row
     columnaVariable = celdaInicial.Column
@@ -27,8 +28,10 @@ Sub TabularFuncion()
     If variable = "" Then Exit Sub
     
 
-    funcion = InputBox("Ingrese la funciÛn (en tÈrminos de '" & variable & "'):", "FunciÛn")
+    funcion = InputBox("Ingrese la funci√≥n (en t√©rminos de '" & variable & "'):", "Funci√≥n")
     If funcion = "" Then Exit Sub
+    
+    
     
  
     rangoInicioStr = InputBox("Ingrese el inicio del rango:", "Inicio del Rango")
@@ -36,7 +39,7 @@ Sub TabularFuncion()
     If rangoInicioStr = "" Or rangoFinStr = "" Then Exit Sub
     
 
-    intervaloStr = InputBox("Ingrese el intervalo para la tabulaciÛn:", "Intervalo")
+    intervaloStr = InputBox("Ingrese el intervalo para la tabulaci√≥n:", "Intervalo")
     If intervaloStr = "" Then Exit Sub
     
 
@@ -45,7 +48,7 @@ Sub TabularFuncion()
     rangoFin = CDbl(rangoFinStr)
     intervalo = CDbl(intervaloStr)
     If Err.Number <> 0 Then
-        MsgBox "El rango o intervalo ingresado no es v·lido."
+        MsgBox "El rango o intervalo ingresado no es v√°lido."
         Exit Sub
     End If
     On Error GoTo 0
@@ -61,6 +64,8 @@ Sub TabularFuncion()
         .Font.Size = 14
         .Font.Bold = True
     End With
+
+    funcion = AgregarMultiplicacionImplicita(funcion)
 
     filaActual = filaActual + 1
     For i = rangoInicio To rangoFin Step intervalo
@@ -101,22 +106,51 @@ Sub TabularFuncion()
                                                Height:=300)
     
     With grafico.Chart
-        .SetSourceData Source:=graficoRango
         .ChartType = xlXYScatterLines
         .HasTitle = True
-        .ChartTitle.Text = "Gr·fico de DispersiÛn de " & variable
+        .ChartTitle.Text = "Gr√°fico de Dispersi√≥n de " & variable
         .HasLegend = False
         .Axes(xlValue).HasTitle = True
         .Axes(xlValue).AxisTitle.Text = "F(" & variable & ")"
-        .SeriesCollection(1).MarkerStyle = xlMarkerStyleCircle
-        .SeriesCollection(1).MarkerSize = 5
-        .SeriesCollection(1).Format.Line.Visible = msoTrue
-        .SeriesCollection(1).Format.Line.ForeColor.RGB = RGB(0, 0, 0)
-        .SeriesCollection(1).Format.Line.Weight = 1
+        
+         With .SeriesCollection.NewSeries
+            .XValues = Range(Cells(celdaInicial.Row + 1, columnaVariable), Cells(filaActual - 1, columnaVariable)) ' Valores X
+            .Values = Range(Cells(celdaInicial.Row + 1, columnaFuncion), Cells(filaActual - 1, columnaFuncion)) ' Valores Y
+            .MarkerStyle = xlMarkerStyleCircle
+            .MarkerSize = 5
+            .Format.Line.Visible = msoTrue
+            .Format.Line.ForeColor.RGB = RGB(0, 0, 0)
+            .Format.Line.Weight = 1
+        End With
     End With
     
-    MsgBox "La tabulaciÛn se completÛ con Èxito."
+    MsgBox "La tabulaci√≥n se complet√≥ con √©xito."
 End Sub
+
+Function AgregarMultiplicacionImplicita(ByVal funcion As String) As String
+    Dim i As Integer
+    Dim resultado As String
+    Dim caracterActual As String, caracterSiguiente As String
+    
+    resultado = ""
+    
+    For i = 1 To Len(funcion)
+        caracterActual = Mid(funcion, i, 1)
+        If i < Len(funcion) Then
+            caracterSiguiente = Mid(funcion, i + 1, 1)
+            If IsNumeric(caracterActual) And (caracterSiguiente Like "[A-Za-z]") Then
+                resultado = resultado & caracterActual & "*"
+            Else
+                resultado = resultado & caracterActual
+            End If
+        Else
+            resultado = resultado & caracterActual
+        End If
+    Next i
+    
+    AgregarMultiplicacionImplicita = resultado
+End Function
+
 
 
 
